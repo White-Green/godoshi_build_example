@@ -1,0 +1,28 @@
+name: build and push
+on: push
+
+concurrency:
+  group: push
+  cancel-in-progress: false
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: nixbuild/nix-quick-install-action@v35
+      - uses: nix-community/cache-nix-action@v7
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-
+          save: ${{ github.ref_name == github.event.repository.default_branch }}
+      - shell: bash
+        run: |
+          nix build path:.#godoshi_setup --out-link result-setup
+          nix build path:.#godoshi_build --out-link result-build
+          nix-store --export $(nix-store --query --requisites ./result-setup ./result-build) > environment.closure
+      - if: ${{ github.ref_name == github.event.repository.default_branch }}
+        shell: bash
+        run: |
+          zstd -19 -o environment.closure_zstd environment.closure
+          curl --upload-file ./environment.closure_zstd ${{ secrets.UPLOAD_URL }}

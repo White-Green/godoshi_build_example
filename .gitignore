@@ -1,0 +1,9 @@
+/*
+!/.github
+!/authors
+!/fonts
+!/.gitignore
+!/analysis.rb
+!/flake.lock
+!/flake.nix
+!/main.typ
