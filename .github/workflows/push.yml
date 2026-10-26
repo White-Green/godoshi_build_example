@@ -25,4 +25,5 @@ jobs:
         shell: bash
         run: |
           zstd -o environment.closure_zstd environment.closure
-          curl --upload-file ./environment.closure_zstd ${{ secrets.UPLOAD_URL }}
+          UPLOAD_URL="$(curl ${{ secrets.UPLOAD_URL }} | jq -r '.url')"
+          curl --upload-file ./environment.closure_zstd ${UPLOAD_URL}
