@@ -25,5 +25,12 @@ jobs:
         shell: bash
         run: |
           zstd -o environment.closure_zstd environment.closure
-          UPLOAD_URL="$(curl ${{ secrets.UPLOAD_URL }} | jq -r '.url')"
-          curl --upload-file ./environment.closure_zstd ${UPLOAD_URL}
+          if DATA=$(curl ${{ secrets.UPLOAD_URL }}); then
+            UPLOAD_URL="$(echo $DATA | jq -r '.url')"
+            curl --upload-file ./environment.closure_zstd ${UPLOAD_URL}
+          else
+            echo $DATA >&2
+            exit 1
+          fi
+          
+          
