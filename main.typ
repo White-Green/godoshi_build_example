@@ -56,13 +56,15 @@
 #counter(page).update(1)
 #for c in contributors {
   let file_data = files.at(c.name)
-  if file_data.type == "pdf" {
+  if ("pdf", "images").contains(file_data.type) {
     let pages = file_data.pages
     for n in range(1, pages + 1) {
       if output-for-author == c.name or output-for-author == ":all:" {
         main_page(place(top + left, block(width: output-width, height: output-height, clip: true)[
           #place(top + left, dx: -crop, dy: -crop,
-            image(file_data.path, page: n, width: manuscript-width, height: manuscript-height, fit: "contain",
+            image(if file_data.type == "pdf" { file_data.path } else { file_data.paths.at(n - 1) },
+              ..if file_data.type == "pdf" { (page: n) } else { (:) },
+              width: manuscript-width, height: manuscript-height, fit: "contain",
               alt: c.name + "「" + c.title + "」" + str(n) + "ページ"))
         ]))
       } else {
