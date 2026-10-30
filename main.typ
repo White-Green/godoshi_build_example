@@ -1,8 +1,16 @@
 // 掲載順・執筆者・PDFのページ数はここで管理します。
 #let contributors = (
-  (name: "white_green", title: "white_greenの原稿"),
-  (name: "other_user", title: "other_userの原稿"),
+  "white_green",
+  "other_user",
 )
+#let contributors = contributors.map(name => {
+  let metadata = json("authors/" + name + "/metadata.json")
+  (
+    name: name,
+    title: metadata.at("title", default: name + " の原稿"),
+    message: metadata.at("message", default: name + " のあとがき"),
+  )
+})
 #let files = json("files.json")
 
 #let trim-width = 210mm
