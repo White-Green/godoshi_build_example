@@ -7,6 +7,7 @@
   let metadata = json("authors/" + name + "/metadata.json")
   (
     name: name,
+    displayname: metadata.at("name", default: name),
     title: metadata.at("title", default: name + " の原稿"),
     message: metadata.at("message", default: name + " のあとがき"),
   )
@@ -43,7 +44,7 @@
   合同冊子 / デモ版
   #v(16mm)
   #for c in contributors [
-    #c.name #h(1em) #c.title #linebreak()
+    #c.displayname #h(1em) #c.title #linebreak()
   ]
   #v(1fr)
   2026年10月4日
@@ -97,7 +98,7 @@
     [書名], [Test Book],
     [発行日], [2026年10月1日],
     [版], [デモ版・第1版],
-    [執筆], contributors.map(c => c.name).join("、"),
+    [執筆], contributors.map(c => c.displayname).join("、"),
     [編集・発行], [テスト編集部],
   )
   #v(8mm)
